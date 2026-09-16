@@ -12,6 +12,7 @@ class HardwareConfigScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final telemetry = ref.watch(telemetryProvider);
+    final notifier = ref.read(telemetryProvider.notifier);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -77,8 +78,8 @@ class HardwareConfigScreen extends ConsumerWidget {
                   }).toList(),
                   onChanged: (newSize) {
                     if (newSize != null) {
-                      ref.read(telemetryProvider.notifier).state =
-                          telemetry.copyWith(selectedMaxKg: newSize);
+                      // ponytail: direct BLE command dispatch on size selection
+                      notifier.setMaxKg(newSize);
                     }
                   },
                 ),
@@ -130,6 +131,8 @@ class HardwareConfigScreen extends ConsumerWidget {
                         context: context,
                         builder: (_) => TareConfirmationModal(
                           onConfirm: () {
+                            // ponytail: execute hardware tare command directly
+                            notifier.tare();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../providers/contacts_provider.dart';
+import '../../dashboard/providers/dashboard_provider.dart';
 import 'widgets/contact_input_modal.dart';
 
 class EmergencyContactsScreen extends ConsumerWidget {
@@ -57,6 +58,37 @@ class EmergencyContactsScreen extends ConsumerWidget {
           ...roster.voiceRecipients.map(
             (phone) => _buildContactCard(phone, () => notifier.removeVoiceContact(phone)),
           ),
+          const SizedBox(height: 24),
+
+          // Roster Sync Button (Spec 3.2 #4)
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.sync_rounded),
+              label: const Text(
+                'Sync Roster to Device (BLE)',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.cyanAccent,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {
+                // ponytail: sync roster directly through telemetry notifier to BLE
+                ref.read(telemetryProvider.notifier).syncRoster(roster);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Roster synchronized to ESP32 memory'),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
         ],
       ),
     );

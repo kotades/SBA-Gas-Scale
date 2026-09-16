@@ -13,6 +13,7 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final telemetry = ref.watch(telemetryProvider);
+    final notifier = ref.read(telemetryProvider.notifier);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -26,28 +27,40 @@ class DashboardScreen extends ConsumerWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: Row(
-              children: [
-                Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: telemetry.isConnected
-                        ? AppColors.safeGreen
-                        : AppColors.textMuted,
-                    shape: BoxShape.circle,
+            child: GestureDetector(
+              // ponytail: direct tap-to-toggle BLE connection without nested dialogs
+              onTap: () {
+                if (telemetry.isConnected) {
+                  notifier.disconnect();
+                } else {
+                  notifier.scanAndConnect();
+                }
+              },
+              child: Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: telemetry.isConnected
+                          ? AppColors.safeGreen
+                          : AppColors.textMuted,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  telemetry.isConnected ? 'BLE Linked' : 'Offline',
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                  const SizedBox(width: 6),
+                  Text(
+                    telemetry.isConnected ? 'BLE Linked' : 'Offline',
+                    style: TextStyle(
+                      color: telemetry.isConnected
+                          ? AppColors.safeGreen
+                          : AppColors.textMuted,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -73,10 +86,7 @@ class DashboardScreen extends ConsumerWidget {
             // Master Siren Switch
             ManualSirenToggle(
               isSirenActive: telemetry.isSirenActive,
-              onToggle: (active) {
-                ref.read(telemetryProvider.notifier).state =
-                    telemetry.copyWith(isSirenActive: active);
-              },
+              onToggle: (active) => notifier.toggleSiren(active),
             ),
             const SizedBox(height: 20),
           ],
