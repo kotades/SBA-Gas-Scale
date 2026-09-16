@@ -16,7 +16,16 @@ app/build/
 *.apk
 *.aar
 
+# Flutter & Vercel
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+_flutter/
+.vercel/
+
 # OS & Environment
 .DS_Store
 Thumbs.db
 *.log
+
