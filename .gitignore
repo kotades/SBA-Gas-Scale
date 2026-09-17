@@ -15,8 +15,19 @@ app/build/
 .idea/
 *.apk
 *.aar
+local.properties
+**/GeneratedPluginRegistrant.java
+
+# Flutter & Vercel
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+_flutter/
+.vercel/
 
 # OS & Environment
 .DS_Store
 Thumbs.db
 *.log
+

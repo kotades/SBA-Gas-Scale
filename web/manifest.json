@@ -1,0 +1,11 @@
+{
+  "name": "SBA Gas Scale",
+  "short_name": "SBA Gas",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#090D16",
+  "theme_color": "#090D16",
+  "description": "SBA Gas Scale Telemetry Dashboard & BLE Controller",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false
+}
