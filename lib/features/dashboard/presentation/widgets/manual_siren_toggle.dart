@@ -60,7 +60,7 @@ class ManualSirenToggle extends StatelessWidget {
           Switch(
             value: isSirenActive,
             onChanged: onToggle,
-            activeColor: AppColors.dangerRed,
+            activeThumbColor: AppColors.dangerRed,
           ),
         ],
       ),

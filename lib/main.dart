@@ -46,7 +46,7 @@ class _SbaGasScaleAppState extends State<SbaGasScaleApp> {
           selectedIndex: _currentTab,
           onDestinationSelected: (index) => setState(() => _currentTab = index),
           backgroundColor: const Color(0xFF121829),
-          indicatorColor: AppColors.cyanAccent.withOpacity(0.2),
+          indicatorColor: AppColors.cyanAccent.withValues(alpha: 0.2),
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.dashboard_outlined),

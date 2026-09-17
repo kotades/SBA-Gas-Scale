@@ -47,7 +47,7 @@ class BleConnectionBadge extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.cyanAccent.withOpacity(0.2),
+                  color: AppColors.cyanAccent.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(

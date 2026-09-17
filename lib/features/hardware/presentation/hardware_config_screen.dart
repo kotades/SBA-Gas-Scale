@@ -53,7 +53,7 @@ class HardwareConfigScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<double>(
-                  value: telemetry.selectedMaxKg,
+                  initialValue: telemetry.selectedMaxKg,
                   dropdownColor: AppColors.surfaceLight,
                   style: const TextStyle(
                     color: Colors.white,

@@ -49,7 +49,7 @@ class _EmergencyAlarmBannerState extends State<EmergencyAlarmBanner>
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: AppColors.dangerRed.withOpacity(0.5),
+                color: AppColors.dangerRed.withValues(alpha: 0.5),
                 blurRadius: 15,
                 spreadRadius: 2,
               ),
