@@ -9,6 +9,10 @@ import 'ble_constants.dart';
 class BleService {
   BluetoothDevice? _connectedDevice;
   BluetoothCharacteristic? _targetCharacteristic;
+  Timer? _demoTimer;
+
+  BluetoothDevice? get connectedDevice => _connectedDevice;
+  bool get isConnected => _connectedDevice != null || _demoTimer != null;
 
   final _telemetryController = StreamController<TelemetryData>.broadcast();
   Stream<TelemetryData> get telemetryStream => _telemetryController.stream;
@@ -16,10 +20,29 @@ class BleService {
   final _connectionStateController = StreamController<bool>.broadcast();
   Stream<bool> get connectionStateStream => _connectionStateController.stream;
 
+  Stream<List<ScanResult>> get scanResultsStream => FlutterBluePlus.scanResults;
+  Stream<bool> get isScanningStream => FlutterBluePlus.isScanning;
+
   TelemetryData _currentTelemetry = const TelemetryData();
   TelemetryData get currentTelemetry => _currentTelemetry;
 
-  /// Start scanning for the SBA Gas Detector appliance.
+  /// Start scanning for all nearby BLE peripherals to populate discovered devices list.
+  Future<void> startDiscoveryScan({Duration timeout = const Duration(seconds: 15)}) async {
+    try {
+      await FlutterBluePlus.startScan(timeout: timeout);
+    } catch (_) {
+      // Handle platforms or web where startScan may require permission
+    }
+  }
+
+  /// Stop active BLE scanning.
+  Future<void> stopScan() async {
+    try {
+      await FlutterBluePlus.stopScan();
+    } catch (_) {}
+  }
+
+  /// Start scanning for the SBA Gas Detector appliance specifically (legacy quick connect).
   Future<void> startScan({required Function(BluetoothDevice) onDeviceFound}) async {
     FlutterBluePlus.scanResults.listen((results) {
       for (ScanResult r in results) {
@@ -113,8 +136,40 @@ class BleService {
     await _targetCharacteristic!.write(bytes, withoutResponse: false);
   }
 
+  /// Connect to a simulated scale for Chrome Web or offline testing.
+  void connectDemoDevice() {
+    _demoTimer?.cancel();
+    _demoTimer = null;
+    _connectedDevice = null;
+    _targetCharacteristic = null;
+
+    _currentTelemetry = _currentTelemetry.copyWith(
+      isConnected: true,
+      gasPercentage: 14.8,
+      netWeight: 4.85,
+      alarmState: 0,
+    );
+    _connectionStateController.add(true);
+    _telemetryController.add(_currentTelemetry);
+
+    _demoTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (!_currentTelemetry.isConnected) {
+        timer.cancel();
+        return;
+      }
+      final delta = ((timer.tick % 5) - 2) * 0.05;
+      _currentTelemetry = _currentTelemetry.copyWith(
+        gasPercentage: double.parse((14.8 + delta).toStringAsFixed(1)),
+        netWeight: double.parse((4.85 + delta * 0.1).toStringAsFixed(2)),
+      );
+      _telemetryController.add(_currentTelemetry);
+    });
+  }
+
   /// Disconnect and cleanup GATT connections.
   Future<void> disconnect() async {
+    _demoTimer?.cancel();
+    _demoTimer = null;
     await _connectedDevice?.disconnect();
     _connectedDevice = null;
     _targetCharacteristic = null;

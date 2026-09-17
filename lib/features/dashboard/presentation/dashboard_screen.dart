@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../hardware/presentation/widgets/ble_scanner_card.dart';
 import '../providers/dashboard_provider.dart';
 import 'widgets/volumetric_cylinder_painter.dart';
 import 'widgets/gas_saturation_gauge.dart';
@@ -28,13 +29,39 @@ class DashboardScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: GestureDetector(
-              // ponytail: direct tap-to-toggle BLE connection without nested dialogs
+              // ponytail: tap BLE badge to open quick Bluetooth scanner sheet
               onTap: () {
-                if (telemetry.isConnected) {
-                  notifier.disconnect();
-                } else {
-                  notifier.scanAndConnect();
-                }
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: AppColors.background,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  ),
+                  isScrollControlled: true,
+                  builder: (ctx) => Padding(
+                    padding: EdgeInsets.only(
+                      top: 16,
+                      left: 16,
+                      right: 16,
+                      bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 4,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardBorder,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const BleScannerCard(),
+                      ],
+                    ),
+                  ),
+                );
               },
               child: Row(
                 children: [

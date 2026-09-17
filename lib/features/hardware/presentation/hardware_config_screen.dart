@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../dashboard/providers/dashboard_provider.dart';
 import 'widgets/tare_confirmation_modal.dart';
+import 'widgets/ble_scanner_card.dart';
 
 class HardwareConfigScreen extends ConsumerWidget {
   const HardwareConfigScreen({super.key});
@@ -27,6 +28,10 @@ class HardwareConfigScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // Bluetooth ESP32 Device Management & Scanner Card
+          const BleScannerCard(),
+          const SizedBox(height: 16),
+
           // Capacity Dropdown Card
           Container(
             padding: const EdgeInsets.all(16),

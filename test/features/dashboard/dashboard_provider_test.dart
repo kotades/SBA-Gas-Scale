@@ -5,10 +5,22 @@ import 'package:sba_gas_scale/features/dashboard/providers/dashboard_provider.da
 
 class FakeBleService extends BleService {
   String? lastCommandSent;
+  bool discoveryScanStarted = false;
+  bool scanStopped = false;
 
   @override
   Future<void> sendCommand(String jsonCommand) async {
     lastCommandSent = jsonCommand;
+  }
+
+  @override
+  Future<void> startDiscoveryScan({Duration timeout = const Duration(seconds: 15)}) async {
+    discoveryScanStarted = true;
+  }
+
+  @override
+  Future<void> stopScan() async {
+    scanStopped = true;
   }
 }
 
@@ -30,6 +42,24 @@ void main() {
       expect(notifier.state.gasPercentage, 14.5);
       expect(notifier.state.netWeight, 4.25);
       expect(notifier.state.selectedMaxKg, 6.0);
+      expect(notifier.state.isConnected, isFalse);
+    });
+
+    test('startScan and stopScan interact with BLE engine', () async {
+      await notifier.startScan();
+      expect(fakeBle.discoveryScanStarted, isTrue);
+
+      await notifier.stopScan();
+      expect(fakeBle.scanStopped, isTrue);
+    });
+
+    test('connectDemo activates demo scale telemetry', () {
+      notifier.connectDemo();
+      expect(notifier.state.isConnected, isTrue);
+      expect(notifier.state.gasPercentage, 14.8);
+      expect(notifier.state.netWeight, 4.85);
+
+      notifier.disconnect();
       expect(notifier.state.isConnected, isFalse);
     });
 

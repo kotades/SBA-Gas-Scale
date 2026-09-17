@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/telemetry_data.dart';
 import '../../../core/models/escalation_roster.dart';
@@ -8,6 +9,17 @@ import '../../../core/ble/ble_command_serializer.dart';
 // ponytail: single BleService instance shared via provider, avoiding singleton pattern
 final bleServiceProvider = Provider<BleService>((ref) {
   return BleService();
+});
+
+// ponytail: direct stream providers for live scan results and scanning status
+final bleScanResultsProvider = StreamProvider<List<ScanResult>>((ref) {
+  final ble = ref.watch(bleServiceProvider);
+  return ble.scanResultsStream;
+});
+
+final bleIsScanningProvider = StreamProvider<bool>((ref) {
+  final ble = ref.watch(bleServiceProvider);
+  return ble.isScanningStream;
 });
 
 // ponytail: direct StateNotifier binding to BleService stream — no repository or interactor layers required
@@ -34,12 +46,30 @@ class TelemetryNotifier extends StateNotifier<TelemetryData> {
     });
   }
 
+  Future<void> startScan() async {
+    await _ble.startDiscoveryScan();
+  }
+
+  Future<void> stopScan() async {
+    await _ble.stopScan();
+  }
+
+  Future<void> connectDevice(BluetoothDevice device) async {
+    await _ble.connect(device);
+  }
+
+  void connectDemo() {
+    _ble.connectDemoDevice();
+    state = _ble.currentTelemetry;
+  }
+
   void scanAndConnect() {
     _ble.startScan(onDeviceFound: (device) => _ble.connect(device));
   }
 
   void disconnect() {
     _ble.disconnect();
+    state = state.copyWith(isConnected: false);
   }
 
   void toggleSiren(bool active) {
