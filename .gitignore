@@ -30,4 +30,6 @@ _flutter/
 .DS_Store
 Thumbs.db
 *.log
+*.iml
+.metadata
 
