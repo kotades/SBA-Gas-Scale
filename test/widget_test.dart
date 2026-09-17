@@ -9,12 +9,12 @@ void main() {
 
     // Switch to Contacts
     await tester.tap(find.text('Contacts'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Escalation Roster'), findsOneWidget);
 
     // Switch to Setup
     await tester.tap(find.text('Hardware'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Hardware Setup'), findsOneWidget);
   });
 }

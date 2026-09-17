@@ -15,10 +15,10 @@ void main() {
     });
 
     test('determines safety levels accurately', () {
-      expect(const TelemetryData(gasPercentage: 15.0).safetyStatus, SafetyStatus.safe);
-      expect(const TelemetryData(gasPercentage: 45.0).safetyStatus, SafetyStatus.warning);
-      expect(const TelemetryData(gasPercentage: 65.0).safetyStatus, SafetyStatus.critical);
-      expect(const TelemetryData(alarmState: 2).safetyStatus, SafetyStatus.critical);
+      expect(const TelemetryData(gasPercentage: 15.0, netWeight: 5.0).safetyStatus, SafetyStatus.safe);
+      expect(const TelemetryData(gasPercentage: 45.0, netWeight: 5.0).safetyStatus, SafetyStatus.warning);
+      expect(const TelemetryData(gasPercentage: 65.0, netWeight: 5.0).safetyStatus, SafetyStatus.critical);
+      expect(const TelemetryData(alarmState: 2, netWeight: 5.0).safetyStatus, SafetyStatus.critical);
     });
 
     test('detects low fuel correctly under 1.0 kg', () {

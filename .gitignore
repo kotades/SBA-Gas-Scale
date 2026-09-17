@@ -15,6 +15,8 @@ app/build/
 .idea/
 *.apk
 *.aar
+local.properties
+**/GeneratedPluginRegistrant.java
 
 # Flutter & Vercel
 .dart_tool/
