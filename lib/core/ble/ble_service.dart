@@ -76,12 +76,21 @@ class BleService {
       // Platform-specific fallback if device already locked MTU
     }
 
-    // Discover GATT Services & Characteristics
+    // Listen to connection state changes to handle unexpected disconnects
+    device.connectionState.listen((connectionState) {
+      if (connectionState == BluetoothConnectionState.disconnected) {
+        disconnect();
+      }
+    });
+
+    // Discover GATT Services & Characteristics configured for SBA Gas Scale
     final services = await device.discoverServices();
     for (var s in services) {
-      if (s.uuid == Guid(BleConstants.serviceUuid)) {
+      if (s.uuid == Guid(BleConstants.serviceUuid) ||
+          s.uuid.toString().toLowerCase() == BleConstants.serviceUuid.toLowerCase()) {
         for (var c in s.characteristics) {
-          if (c.uuid == Guid(BleConstants.characteristicUuid)) {
+          if (c.uuid == Guid(BleConstants.characteristicUuid) ||
+              c.uuid.toString().toLowerCase() == BleConstants.characteristicUuid.toLowerCase()) {
             _targetCharacteristic = c;
             await c.setNotifyValue(true);
             c.onValueReceived.listen(_handleIncomingData);

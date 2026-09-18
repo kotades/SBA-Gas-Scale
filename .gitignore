@@ -12,6 +12,7 @@ compile_commands.json
 .gradle/
 build/
 app/build/
+release/
 .idea/
 *.apk
 *.aar
